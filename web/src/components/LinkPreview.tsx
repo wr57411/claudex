@@ -108,7 +108,7 @@ export function LinkPreview({ url }: Props) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2 block border border-line rounded-[10px] bg-paper/50 px-3 py-2 flex items-start gap-3 max-w-[500px] hover:border-line-strong transition-colors"
+        className="mt-2 block border border-line rounded-[10px] bg-paper/50 px-3 py-2 flex items-start gap-3 max-w-full hover:border-line-strong transition-colors"
       >
         <div className="flex-1 min-w-0 space-y-1.5">
           <div className="h-3 bg-line rounded w-2/3 animate-pulse" />
@@ -133,7 +133,7 @@ export function LinkPreview({ url }: Props) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-2 block border border-line rounded-[10px] bg-paper/50 px-3 py-2 flex items-start gap-3 max-w-[500px] hover:border-line-strong transition-colors"
+      className="mt-2 block border border-line rounded-[10px] bg-paper/50 px-3 py-2 flex items-start gap-3 max-w-full hover:border-line-strong transition-colors"
     >
       <div className="flex-1 min-w-0">
         {data.siteName && (
