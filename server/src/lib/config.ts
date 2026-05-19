@@ -43,12 +43,15 @@ export function loadConfig(): Config {
 }
 
 // Refuse to bind beyond loopback — this is a hard boundary. See CLAUDE.md.
+// Only bypass with CLAUDEX_UNSAFE_BIND=1 (e.g. trusted LAN access with firewall).
 export function assertSafeBind(host: string): void {
+  if (process.env.CLAUDEX_UNSAFE_BIND === "1") return;
   const ok = host === "127.0.0.1" || host === "::1" || host === "localhost";
   if (!ok) {
     throw new Error(
       `Refusing to bind to ${host}. claudex must bind to 127.0.0.1 only. ` +
-        `Terminate TLS and expose via Cloudflare Tunnel / Tailscale / Caddy outside the process.`,
+        `Terminate TLS and expose via Cloudflare Tunnel / Tailscale / Caddy outside the process. ` +
+        `Set CLAUDEX_UNSAFE_BIND=1 to override (only for trusted local networks).`,
     );
   }
 }
