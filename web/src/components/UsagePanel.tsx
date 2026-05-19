@@ -35,9 +35,16 @@ import { estimateCostUsd, MODEL_LABEL } from "@/lib/pricing";
  */
 export function UsagePanel({
   session,
+  pieceCount,
   onClose,
 }: {
   session: Session;
+  /**
+   * Transcript piece count — when provided, the usage summary is refetched
+   * each time a new piece lands so the ring / token stats reflect in-flight
+   * turns. Without it the panel snapshots on open.
+   */
+  pieceCount?: number;
   onClose: () => void;
 }) {
   const [usage, setUsage] = useState<UsageSummaryResponse | null>(null);
@@ -58,7 +65,7 @@ export function UsagePanel({
     return () => {
       cancelled = true;
     };
-  }, [session.id, session.model]);
+  }, [session.id, session.model, pieceCount]);
 
   // Close on Escape.
   useEffect(() => {

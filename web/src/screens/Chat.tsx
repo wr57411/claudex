@@ -1363,12 +1363,17 @@ export function ChatScreen() {
       )}
 
       {showUsage && session && (
-        <UsagePanel session={session} onClose={() => setShowUsage(false)} />
+        <UsagePanel
+          session={session}
+          pieceCount={pieces.length}
+          onClose={() => setShowUsage(false)}
+        />
       )}
       {showContext && session && (
         <ContextPanel
           session={session}
           customModels={customModels}
+          pieceCount={pieces.length}
           onClose={() => setShowContext(false)}
         />
       )}

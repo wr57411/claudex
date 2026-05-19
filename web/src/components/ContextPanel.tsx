@@ -18,10 +18,17 @@ import { estimateCostUsd, getModelLabel } from "@/lib/pricing";
 export function ContextPanel({
   session,
   customModels,
+  pieceCount,
   onClose,
 }: {
   session: Session;
   customModels?: { id: string; label: string }[] | null;
+  /**
+   * Transcript piece count — passed in by Chat so this panel re-fetches the
+   * usage summary as new pieces stream in. Without it the panel snapshots on
+   * open and never updates until you close + reopen.
+   */
+  pieceCount?: number;
   onClose: () => void;
 }) {
   const [usage, setUsage] = useState<UsageSummaryResponse | null>(null);
@@ -38,7 +45,8 @@ export function ContextPanel({
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  // Fetch all data in parallel.
+  // Fetch usage in parallel — refetched whenever pieceCount changes so the
+  // ring / token stats track in-flight turns instead of snapshotting on open.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -49,6 +57,12 @@ export function ContextPanel({
         if (!cancelled) setUsageErr(e instanceof Error ? e.message : "load_failed");
       }
     })();
+    return () => { cancelled = true; };
+  }, [session.id, pieceCount]);
+
+  // Env + memory only depend on identity, not the live transcript.
+  useEffect(() => {
+    let cancelled = false;
     (async () => {
       try {
         const e = await api.getUserEnv();
