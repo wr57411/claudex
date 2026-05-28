@@ -118,6 +118,7 @@ function selectSessions(db: Database.Database): Session[] {
     adopted_from_cli: number;
     tags: string;
     pinned: number;
+    source_device: string | null;
   }>;
   return rows.map((r) => ({
     id: r.id,
@@ -148,6 +149,7 @@ function selectSessions(db: Database.Database): Session[] {
     // row is read through SessionStore. Emit null here to satisfy the
     // DTO schema without baking a stale preview into the archive.
     lastUserMessage: null,
+    sourceDevice: (r.source_device as "mobile" | "desktop" | null),
     stats: {
       messages: r.stats_messages,
       filesChanged: r.stats_files_changed,

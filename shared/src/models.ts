@@ -183,6 +183,7 @@ export const Session = z.object({
   // `PATCH /api/sessions/:id` with `{pinned: boolean}`. Defaults to false so
   // rows created before the column existed round-trip cleanly.
   pinned: z.boolean().default(false),
+  sourceDevice: z.enum(["mobile", "desktop"]).nullable().default(null),
   // Single-line preview of the most recent `user_message` event's text,
   // used by the Home session list to show "what the user last said here"
   // under the title. Computed server-side via a correlated subquery on

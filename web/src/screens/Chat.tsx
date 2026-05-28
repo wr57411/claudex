@@ -3697,8 +3697,11 @@ function PermissionCard({
               action can upgrade to "Always allow" without needing a
               separate button. Upgrades `allow_once` → `allow_always` at
               decision time via allowOnceDecision. */}
-          <label className="mt-4 flex items-center gap-2 text-[13px] select-none">
-            <span className="h-4 w-4 rounded-[4px] border border-line-strong bg-canvas flex items-center justify-center shrink-0">
+          <label className="mt-4 flex items-center gap-2 text-[13px] select-none cursor-pointer">
+            <span
+              className="h-4 w-4 rounded-[4px] border border-line-strong bg-canvas flex items-center justify-center shrink-0"
+              onClick={() => setRemember(!remember)}
+            >
               {remember && <span className="h-2 w-2 bg-klein rounded-[1px]" />}
             </span>
             <input
@@ -3861,6 +3864,7 @@ function PermissionCard({
                 className={cn(
                   "h-4 w-4 rounded-[4px] border border-line-strong bg-canvas flex items-center justify-center shrink-0",
                 )}
+                onClick={() => setRemember(!remember)}
               >
                 {remember && (
                   <span className="h-2 w-2 bg-klein rounded-[1px]" />

@@ -5,6 +5,7 @@ import type {
   EffortLevel,
   ModelId,
   PermissionMode,
+  SessionStatus,
   SubagentEndPayload,
   SubagentLifecycleStatus,
   SubagentProgressPayload,
@@ -221,6 +222,17 @@ export type RunnerEvent =
   // by a session status transition). Cross-session by design — routed
   // through the global WS channel just like queue_update.
   | { type: "alerts_update"; at: string }
+  // Manager-synthesized. Broadcast when a session is created so all tabs
+  // (especially cross-device) can see it live without a full refresh.
+  // Cross-session by design — routed through the global WS channel.
+  | {
+      type: "session_created";
+      sessionId: string;
+      title: string;
+      projectId: string;
+      status: SessionStatus;
+      sourceDevice: "mobile" | "desktop" | null;
+    }
   // --------------------------------------------------------------------
   // Live subagents (s-17). Each `task_*` SDK message maps to one of
   // these. Shapes mirror the shared `Subagent*Payload` schemas verbatim

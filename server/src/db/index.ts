@@ -852,6 +852,16 @@ const MIGRATIONS: MigrationEntry[] = [
       ALTER TABLE users ADD COLUMN totp_enabled INTEGER NOT NULL DEFAULT 1;
     `,
   },
+  {
+    id: 29,
+    name: "sessions_source_device",
+    // Track device origin (mobile/desktop) for cross-device session sync.
+    // When sessions are created, we record whether it was from mobile Safari
+    // or desktop browser so the other device can show a visual indicator.
+    up: `
+      ALTER TABLE sessions ADD COLUMN source_device TEXT;
+    `,
+  },
 ];
 
 export function openDb(config: Config, log: Logger): ClaudexDb {

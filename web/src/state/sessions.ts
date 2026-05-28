@@ -1178,6 +1178,43 @@ export const useSessions = create<SessionState>((set, get) => {
         });
         return;
       }
+      // Session created — cross-device sync. Insert the new session into
+      // the sessions list so other tabs (especially desktop) see it live.
+      if (frame.type === "session_created") {
+        const { sessionId, title, projectId, status, sourceDevice } = frame;
+        set((s) => {
+          // Only add if we don't already have it (race against refetch)
+          if (s.sessions.find((x) => x.id === sessionId)) return s;
+          const now = new Date().toISOString();
+          const newSession: Session = {
+            id: sessionId,
+            title,
+            projectId,
+            branch: null,
+            worktreePath: null,
+            status,
+            model: "claude-sonnet-4-6",
+            mode: "default",
+            effort: "medium",
+            createdAt: now,
+            updatedAt: now,
+            lastMessageAt: null,
+            archivedAt: null,
+            sdkSessionId: null,
+            parentSessionId: null,
+            forkedFromSessionId: null,
+            cliJsonlSeq: 0,
+            adoptedFromCli: false,
+            tags: [],
+            pinned: false,
+            sourceDevice,
+            lastUserMessage: null,
+            stats: { messages: 0, filesChanged: 0, linesAdded: 0, linesRemoved: 0, contextPct: 0 },
+          };
+          return { sessions: [newSession, ...s.sessions] };
+        });
+        return;
+      }
       // Any substantive reply frame means the pending placeholder did its job.
       if (
         frame.type === "assistant_text_delta" ||

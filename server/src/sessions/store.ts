@@ -40,6 +40,7 @@ interface SessionRow {
   adopted_from_cli: number;
   tags: string;
   pinned: number;
+  source_device: string | null;
   // Not a physical column — populated by the correlated subquery wrapped
   // into every SELECT via `SESSION_SELECT_COLS`. Raw `payload.$.text` from
   // the most recent user_message event on this session, or NULL if the
@@ -121,6 +122,7 @@ function toSession(row: SessionRow): Session {
     adoptedFromCli: row.adopted_from_cli === 1,
     tags: parseTags(row.tags),
     pinned: row.pinned === 1,
+    sourceDevice: (row.source_device as "mobile" | "desktop" | null),
     lastUserMessage: toPreview(row.last_user_message),
     stats: {
       messages: row.stats_messages,
@@ -143,6 +145,7 @@ export interface SessionCreateInput {
   branch?: string | null;
   parentSessionId?: string | null;
   forkedFromSessionId?: string | null;
+  sourceDevice?: string | null;
 }
 
 export class SessionStore {
@@ -383,6 +386,7 @@ export class SessionStore {
       adopted_from_cli: 0,
       tags: "[]",
       pinned: 0,
+      source_device: input.sourceDevice ?? null,
     };
     this.lazyStmt(
       "create",
@@ -393,7 +397,7 @@ export class SessionStore {
            parent_session_id, forked_from_session_id,
            stats_messages, stats_files_changed, stats_lines_added,
            stats_lines_removed, stats_context_pct, stats_computed_seq,
-           cli_jsonl_seq, adopted_from_cli, tags, pinned
+           cli_jsonl_seq, adopted_from_cli, tags, pinned, source_device
          ) VALUES (
            @id, @title, @project_id, @branch, @worktree_path, @status, @model, @mode,
            @effort,
@@ -401,7 +405,7 @@ export class SessionStore {
            @parent_session_id, @forked_from_session_id,
            @stats_messages, @stats_files_changed, @stats_lines_added,
            @stats_lines_removed, @stats_context_pct, @stats_computed_seq,
-           @cli_jsonl_seq, @adopted_from_cli, @tags, @pinned
+           @cli_jsonl_seq, @adopted_from_cli, @tags, @pinned, @source_device
          )`,
     ).run(row);
     this.search.upsertTitle(row.id, row.title);

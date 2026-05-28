@@ -1347,6 +1347,28 @@ export class SessionManager {
   }
 
   /**
+   * Broadcast a `session_created` frame to every authenticated tab via the
+   * global WS channel. Used on session creation so cross-device sync works
+   * (e.g. desktop tabs see sessions started on mobile in real-time).
+   */
+  notifySessionCreated(
+    sessionId: string,
+    title: string,
+    projectId: string,
+    status: SessionStatus,
+    sourceDevice: "mobile" | "desktop" | null,
+  ): void {
+    this.deps.broadcast("", {
+      type: "session_created",
+      sessionId,
+      title,
+      projectId,
+      status,
+      sourceDevice,
+    });
+  }
+
+  /**
    * Broadcast an `alerts_update` frame to every authenticated tab via the
    * global WS channel. Same pattern as `notifyQueueUpdate` — payload-free
    * beyond a server-side timestamp, clients refetch `GET /api/alerts` to

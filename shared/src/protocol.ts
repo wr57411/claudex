@@ -289,6 +289,15 @@ export const ServerAlertsUpdate = z.object({
 // (`/events?limit=200`) and merging with any lazily-loaded older pages.
 // Intentionally payload-free beyond the session id — the client's existing
 // fetch path is simpler to drive than a per-event replay channel.
+export const ServerSessionCreated = z.object({
+  type: z.literal("session_created"),
+  sessionId: z.string(),
+  title: z.string(),
+  projectId: z.string(),
+  status: SessionStatus,
+  sourceDevice: z.enum(["mobile", "desktop"]).nullable(),
+});
+
 export const ServerRefreshTranscript = z.object({
   type: z.literal("refresh_transcript"),
   sessionId: z.string(),
@@ -346,6 +355,7 @@ export const ServerSubagentToolProgress = SubagentToolProgressPayload.extend({
 
 export const ServerFrame = z.discriminatedUnion("type", [
   ServerHelloAck,
+  ServerSessionCreated,
   ServerSessionUpdate,
   ServerAssistantTextDelta,
   ServerAssistantTextEnd,

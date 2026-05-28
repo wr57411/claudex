@@ -386,6 +386,14 @@ export async function registerSessionRoutes(
           .send({ error: "project_not_trusted", projectId: project.id });
       }
 
+      // Detect source device from User-Agent for cross-device sync.
+      // Mobile Safari includes "iPhone" or "iPad" in UA; Android mobile
+      // includes "Android" but we focus on iOS for now.
+      const userAgent = req.headers["user-agent"]?.toLowerCase() ?? "";
+      const isMobile =
+        userAgent.includes("iphone") || userAgent.includes("ipad");
+      const sourceDevice = isMobile ? "mobile" : "desktop";
+
       const rawTitle = parsed.data.title?.trim() || undefined;
       const title = rawTitle ?? "Untitled";
       let worktreePath: string | null = null;
@@ -444,7 +452,19 @@ export async function registerSessionRoutes(
         effort: parsed.data.effort,
         worktreePath,
         branch,
+        sourceDevice,
       });
+
+      // Broadcast session creation to all connected clients for cross-device sync.
+      // This lets desktop browsers see sessions started on mobile in real-time.
+      deps.manager.notifySessionCreated(
+        session.id,
+        session.title,
+        session.projectId,
+        session.status,
+        session.sourceDevice,
+      );
+
       return reply.send({ session });
     },
   );
